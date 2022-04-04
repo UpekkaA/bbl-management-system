@@ -1,11 +1,11 @@
 from django.urls import path
 
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-
-from league.views import RegisterView
+from league import views
 
 urlpatterns = [
-    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('register/', RegisterView.as_view(), name='auth_register'),
+
+    # Teams
+    path('teams', views.ListCreateTeamAPIView.as_view(), name='get_post_teams'),
+    path('teams/<int:pk>/', views.RetrieveUpdateDestroyTeamAPIView.as_view(), name='get_delete_update_teams'),
 ]
+

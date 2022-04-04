@@ -37,10 +37,3 @@ class GroupSerializer(serializers.ModelSerializer):
         model = Group
         fields = ['id', 'name']
 
-
-class TeamSerializer(serializers.ModelSerializer):  # create class to serializer model
-    creator = serializers.ReadOnlyField(source='creator.username')
-
-    class Meta:
-        model = Team
-        fields = ('id', 'name', 'logo_url', 'creator')
