@@ -3,7 +3,7 @@ from django.contrib.auth.models import User, Group
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
 
-from league.models import Team, Stadium, Game
+from league.models import Team, Stadium, Game, Coach, Player
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -54,7 +54,7 @@ class TeamSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'logo_url', 'creator')
 
 
-# create class to serializer model for Team
+# create class to serializer model for Game
 class GameSerializer(serializers.ModelSerializer):
     creator = serializers.ReadOnlyField(source='creator.username')
 
@@ -62,3 +62,24 @@ class GameSerializer(serializers.ModelSerializer):
         model = Game
         fields = ('id', 'date_time', 'stadium', 'finished', 'round', 'team_home', 'team_away', 'winner', 'score_home',
                   'score_away', 'creator')
+
+
+# create class to serializer model for Coach
+class CoachSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Coach
+        fields = ('user', 'team')
+
+
+# create class to serializer model for Player
+class PlayerSerializer(serializers.ModelSerializer):
+    username = serializers.ReadOnlyField(source='user.username')
+    first_name = serializers.ReadOnlyField(source='user.first_name')
+    last_name = serializers.ReadOnlyField(source='user.last_name')
+    team_name = serializers.ReadOnlyField(source='team.name')
+
+    class Meta:
+        model = Player
+        fields = (
+            'user', 'team', 'games_played', 'points_total', 'points_average', 'username', 'first_name', 'last_name',
+            'team_name')

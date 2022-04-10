@@ -4,12 +4,12 @@ from rest_framework import generics, viewsets
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 
-from .filters import TeamFilter, GameFilter
-from .models import Team, Stadium, Game
+from .filters import TeamFilter, GameFilter, PlayerFilter
+from .models import Team, Stadium, Game, Coach, Player
 from .pagination import CustomPagination
 from .permissions import IsOwnerOrReadOnly
 from .serializers import RegisterSerializer, UserSerializer, GroupSerializer, TeamSerializer, StadiumSerializer, \
-    GameSerializer
+    GameSerializer, CoachSerializer, PlayerSerializer
 
 
 class RegisterView(generics.CreateAPIView):
@@ -112,3 +112,49 @@ class RetrieveUpdateDestroyGameAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = GameSerializer
     queryset = Game.objects.all()
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+
+
+class ListCreateCoachAPIView(ListCreateAPIView):
+    """
+    API endpoint that allows Coaches to be viewed or edited.
+    """
+    serializer_class = CoachSerializer
+    queryset = Coach.objects.all()
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    pagination_class = CustomPagination
+
+    def perform_create(self, serializer):
+        serializer.save()
+
+
+class RetrieveUpdateDestroyCoachAPIView(RetrieveUpdateDestroyAPIView):
+    """
+    API endpoint that allows Coaches to be viewed or edited.
+    """
+    serializer_class = CoachSerializer
+    queryset = Coach.objects.all()
+    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+
+
+class ListCreatePlayerAPIView(ListCreateAPIView):
+    """
+    API endpoint that allows Players to be viewed or edited.
+    """
+    serializer_class = PlayerSerializer
+    queryset = Player.objects.all()
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    pagination_class = CustomPagination
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = PlayerFilter
+
+    def perform_create(self, serializer):
+        serializer.save()
+
+
+class RetrieveUpdateDestroyPlayerAPIView(RetrieveUpdateDestroyAPIView):
+    """
+    API endpoint that allows Players to be viewed or edited.
+    """
+    serializer_class = PlayerSerializer
+    queryset = Player.objects.all()
+    permission_classes = [IsAuthenticatedOrReadOnly]

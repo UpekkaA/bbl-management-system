@@ -19,4 +19,12 @@ urlpatterns = [
     # Stadiums
     path('stadiums', views.ListCreateStadiumAPIView.as_view(), name='get_post_stadiums'),
     path('stadiums/<int:pk>/', views.RetrieveUpdateDestroyStadiumAPIView.as_view(), name='get_delete_update_stadiums'),
+
+    # Coaches
+    path('coaches', views.ListCreateCoachAPIView.as_view(), name='get_post_coaches'),
+    path('coaches/<int:pk>/', views.RetrieveUpdateDestroyCoachAPIView.as_view(), name='get_delete_update_coaches'),
+
+    # Player
+    path('players', views.ListCreatePlayerAPIView.as_view(), name='get_post_player'),
+    path('players/<int:pk>/', views.RetrieveUpdateDestroyPlayerAPIView.as_view(), name='get_delete_update_player'),
 ]

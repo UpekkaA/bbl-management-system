@@ -67,18 +67,20 @@ class Game(models.Model):
         ordering = ['-id']
 
 
-class Player(User):
+class Player(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     games_played = models.PositiveSmallIntegerField(default=0)
     points_total = models.PositiveBigIntegerField(default=0)
-    points_average = models.PositiveSmallIntegerField(default=0)
+    points_average = models.FloatField(default=0.0)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['-id']
 
 
-class Coach(User):
+class Coach(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
 
     class Meta:
