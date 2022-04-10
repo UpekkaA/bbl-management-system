@@ -2,3 +2,4 @@ Django==4.0.3
 django-filter==2.4.0
 djangorestframework==3.13.1
 djangorestframework-simplejwt==5.1.0
+numpy=1.22.3
