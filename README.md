@@ -7,6 +7,10 @@ Simple JWT which is a JSON Web Token authentication plugin for the Django REST F
 - Python 3.10.4
 - Django 4.0.3
 - Django REST Framework 3.13.1
+- djangorestframework-simplejwt 5.1.0
+- django-filter 2.4.0
+- numpy 1.22.3
+- pandas 1.4.2
 
 ## Installation
 After you cloned the repository, you want to create a virtual environment, so you have a clean python installation.
@@ -28,15 +32,16 @@ Run Migrations
 python manage.py migrate
 ```
 
+First create the admin user 
+```
+python manage.py createsuperuser --email admin@example.com --username admin
+```
+
 Then, we have to start up Django's development server.
 ```
 python manage.py runserver
 ```
 
-First create the admin user 
-```
-python manage.py createsuperuser --email admin@example.com --username admin
-```
 
 ## Create users and Tokens
 
@@ -89,6 +94,193 @@ and we will get a new access token
 }
 ```
 
+Update user with PUT/PATCH
+```
+PUT http://127.0.0.1:8000/api/v1/auth/users/2/
+{
+    "username": "victor",
+    "password": "pbkdf2_sha256$320000$HjyVmaVrWHqdjRYLD1KREy$aHuajYO8DDwT32ULPKj8XuSgAl0x7FlFdKJg+zgCbYI=",
+    "email": "victor@bbltestdjango.com",
+    "first_name": "Victor",
+    "last_name": "Lawrence",
+    "groups": []
+}
+```
+
+Create Groups which will be used for Permission handling
+```
+POST http://127.0.0.1:8000/api/v1/auth/groups/
+"Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjQ5NjE2NjYwLCJpYXQiOjE2NDk2MTYxMzYsImp0aSI6ImQxOGM2MjQ5ODgwODQ5NTJhNDQxOGNkNDc5NTU2NDNhIiwidXNlcl9pZCI6Nn0.tthmS9FQZPj27kRdyd85FpRlgrIe-1kxKGRIzkJaFLg"
+
+{
+    "name":"PLAYER"
+}
+```
+
+Get Groups
+```
+"Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjQ5NjE2NjYwLCJpYXQiOjE2NDk2MTYxMzYsImp0aSI6ImQxOGM2MjQ5ODgwODQ5NTJhNDQxOGNkNDc5NTU2NDNhIiwidXNlcl9pZCI6Nn0.tthmS9FQZPj27kRdyd85FpRlgrIe-1kxKGRIzkJaFLg"
+GET http://127.0.0.1:8000/api/v1/auth/groups/
+Sample Response:
+{
+    "count": 3,
+    "next": null,
+    "previous": null,
+    "results": [
+        {
+            "id": 1,
+            "name": "PLAYER"
+        },
+        {
+            "id": 2,
+            "name": "COACH"
+        },
+        {
+            "id": 3,
+            "name": "ADMIN"
+        }
+    ]
+}
+```
+Create Teams
+```
+POST http://127.0.0.1:8000/api/v1/league/teams
+"Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjQ5NjE2NjYwLCJpYXQiOjE2NDk2MTYxMzYsImp0aSI6ImQxOGM2MjQ5ODgwODQ5NTJhNDQxOGNkNDc5NTU2NDNhIiwidXNlcl9pZCI6Nn0.tthmS9FQZPj27kRdyd85FpRlgrIe-1kxKGRIzkJaFLg"
+{
+    "name":"Tasmania JackJumpers",
+    "logo_url":"https://source.unsplash.com/user/c_v_r/100x100"
+}
+```
+
+Get Teams
+```
+GET http://127.0.0.1:8000/api/v1/league/teams
+"Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjQ5NjE2NjYwLCJpYXQiOjE2NDk2MTYxMzYsImp0aSI6ImQxOGM2MjQ5ODgwODQ5NTJhNDQxOGNkNDc5NTU2NDNhIiwidXNlcl9pZCI6Nn0.tthmS9FQZPj27kRdyd85FpRlgrIe-1kxKGRIzkJaFLg"
+Sample Response:
+{
+    "count": 16,
+    "next": "http://127.0.0.1:8000/api/v1/league/teams?page=2&page_size=5",
+    "previous": null,
+    "results": [
+        {
+            "id": 1,
+            "name": "Tasmania JackJumpers",
+            "logo_url": "https://source.unsplash.com/user/c_v_r/100x100",
+            "creator": "admin"
+        }
+    ]
+}
+```
+Also support PUT/PATCH Operations
+
+Create Coach
+```
+POST http://127.0.0.1:8000/api/v1/league/coaches
+{
+  "user": 2,
+  "team": 1
+}
+```
+
+Create Player
+```
+POST http://127.0.0.1:8000/api/v1/league/players
+"Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjQ5NjE2NjYwLCJpYXQiOjE2NDk2MTYxMzYsImp0aSI6ImQxOGM2MjQ5ODgwODQ5NTJhNDQxOGNkNDc5NTU2NDNhIiwidXNlcl9pZCI6Nn0.tthmS9FQZPj27kRdyd85FpRlgrIe-1kxKGRIzkJaFLg"
+{
+  "user": 3,
+  "team": 1
+}
+```
+
+Update Player 
+```
+PUT http://127.0.0.1:8000/api/v1/league/players/1/
+"Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjQ5NjE2NjYwLCJpYXQiOjE2NDk2MTYxMzYsImp0aSI6ImQxOGM2MjQ5ODgwODQ5NTJhNDQxOGNkNDc5NTU2NDNhIiwidXNlcl9pZCI6Nn0.tthmS9FQZPj27kRdyd85FpRlgrIe-1kxKGRIzkJaFLg"
+{
+    "user": 3,
+    "team": 1,
+    "height": 190,
+    "games_played": 10,
+    "points_total": 200,
+    "points_average": 80.3
+}
+```
+
+Get Players
+```
+GET http://127.0.0.1:8000/api/v1/league/players?team=1&games_played_gt=5&points_total_gt=100&user_name=john&page_size=5&page=1
+Query parameters are optional
+Sample Response:
+{
+    "count": 1,
+    "next": null,
+    "previous": null,
+    "results": [
+        {
+            "user": 3,
+            "team": 1,
+            "height": 190,
+            "games_played": 10,
+            "points_total": 200,
+            "points_average": 80.3,
+            "username": "John",
+            "first_name": "John",
+            "last_name": "Doe",
+            "team_name": "Brisbane Bullets"
+        }
+    ]
+}
+```
+
+Create Stadium
+```
+POST http://127.0.0.1:8000/api/v1/league/stadiums
+"Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjQ5NjE2NjYwLCJpYXQiOjE2NDk2MTYxMzYsImp0aSI6ImQxOGM2MjQ5ODgwODQ5NTJhNDQxOGNkNDc5NTU2NDNhIiwidXNlcl9pZCI6Nn0.tthmS9FQZPj27kRdyd85FpRlgrIe-1kxKGRIzkJaFLg"
+{
+    "name": "Adelaide Ground",
+    "location": "Adelaide, Australia"
+}
+```
+
+Create Game
+```
+POST http://127.0.0.1:8000/api/v1/league/games
+"Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjQ5NjE2NjYwLCJpYXQiOjE2NDk2MTYxMzYsImp0aSI6ImQxOGM2MjQ5ODgwODQ5NTJhNDQxOGNkNDc5NTU2NDNhIiwidXNlcl9pZCI6Nn0.tthmS9FQZPj27kRdyd85FpRlgrIe-1kxKGRIzkJaFLg"
+{
+  "date_time": "2022-05-10 08:00:00.000000",
+  "stadium": 1,
+  "finished": false,
+  "round": "QU",
+  "team_home": 1,
+  "team_away": 2
+}
+```
+
+Get Games
+```
+GET http://127.0.0.1:8000/api/v1/league/games
+Sample Response
+{
+    "count": 1,
+    "next": null,
+    "previous": null,
+    "results": [
+        {
+            "id": 1,
+            "date_time": "2022-05-11T08:00:00Z",
+            "stadium": 1,
+            "finished": true,
+            "round": "QU",
+            "team_home": 1,
+            "team_away": 2,
+            "winner": 1,
+            "score_home": 12,
+            "score_away": 10,
+            "creator": "admin"
+        }
+    ]
+}
+```
 
 
 
