@@ -1,15 +1,15 @@
 from django.contrib.auth.models import User, Group
-from rest_framework import generics, viewsets, permissions
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.templatetags import rest_framework
 from django_filters import rest_framework as filters
+from rest_framework import generics, viewsets
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 
-from .filters import TeamFilter
-from .models import Team, Stadium
+from .filters import TeamFilter, GameFilter
+from .models import Team, Stadium, Game
 from .pagination import CustomPagination
 from .permissions import IsOwnerOrReadOnly
-from .serializers import RegisterSerializer, UserSerializer, GroupSerializer, TeamSerializer, StadiumSerializer
+from .serializers import RegisterSerializer, UserSerializer, GroupSerializer, TeamSerializer, StadiumSerializer, \
+    GameSerializer
 
 
 class RegisterView(generics.CreateAPIView):
@@ -86,4 +86,29 @@ class RetrieveUpdateDestroyTeamAPIView(RetrieveUpdateDestroyAPIView):
     """
     serializer_class = TeamSerializer
     queryset = Team.objects.all()
-    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+
+
+class ListCreateGameAPIView(ListCreateAPIView):
+    """
+    API endpoint that allows games to be viewed or edited.
+    """
+    serializer_class = GameSerializer
+    queryset = Game.objects.all()
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    pagination_class = CustomPagination
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = GameFilter
+
+    def perform_create(self, serializer):
+        # Assign the user who created the team
+        serializer.save(creator=self.request.user)
+
+
+class RetrieveUpdateDestroyGameAPIView(RetrieveUpdateDestroyAPIView):
+    """
+    API endpoint that allows games to be viewed or edited.
+    """
+    serializer_class = GameSerializer
+    queryset = Game.objects.all()
+    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]

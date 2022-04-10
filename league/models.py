@@ -44,7 +44,7 @@ class Game(models.Model):
         SEMI_FINAL = 'SF', _('Semi Final')
         FINAL = 'FI', _('Final')
 
-    date_time = models.DateTimeField(auto_now_add=True)
+    date_time = models.DateTimeField(auto_now_add=False)
     stadium = models.ForeignKey(Stadium, related_name='games', on_delete=models.CASCADE)
     finished = models.BooleanField(default=False)
     round = models.CharField(
@@ -55,7 +55,8 @@ class Game(models.Model):
     # season = models.ForeignKey(Season, related_name='games', on_delete=models.CASCADE)
     team_home = models.ForeignKey(Team, related_name='games_home', on_delete=models.CASCADE)
     team_away = models.ForeignKey(Team, related_name='games_away', on_delete=models.CASCADE)
-    winner = models.ForeignKey(Team, related_name='games_winner', on_delete=models.CASCADE)
+    winner = models.ForeignKey(Team, null=True, blank=True, default=None, related_name='games_winner',
+                               on_delete=models.CASCADE)
     score_home = models.PositiveSmallIntegerField(default=0)
     score_away = models.PositiveSmallIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)

@@ -3,7 +3,7 @@ from django.contrib.auth.models import User, Group
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
 
-from league.models import Team, Stadium
+from league.models import Team, Stadium, Game
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -38,6 +38,13 @@ class GroupSerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 
+# create class to serializer model for Stadium
+class StadiumSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Stadium
+        fields = ('id', 'name', 'location')
+
+
 # create class to serializer model for Team
 class TeamSerializer(serializers.ModelSerializer):
     creator = serializers.ReadOnlyField(source='creator.username')
@@ -47,8 +54,11 @@ class TeamSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'logo_url', 'creator')
 
 
-# create class to serializer model for Stadium
-class StadiumSerializer(serializers.ModelSerializer):
+# create class to serializer model for Team
+class GameSerializer(serializers.ModelSerializer):
+    creator = serializers.ReadOnlyField(source='creator.username')
+
     class Meta:
-        model = Stadium
-        fields = ('id', 'name', 'location')
+        model = Game
+        fields = ('id', 'date_time', 'stadium', 'finished', 'round', 'team_home', 'team_away', 'winner', 'score_home',
+                  'score_away', 'creator')
