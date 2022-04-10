@@ -70,6 +70,7 @@ class Game(models.Model):
 class Player(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    height = models.PositiveSmallIntegerField(default=0)
     games_played = models.PositiveSmallIntegerField(default=0)
     points_total = models.PositiveBigIntegerField(default=0)
     points_average = models.FloatField(default=0.0)

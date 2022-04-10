@@ -81,5 +81,5 @@ class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
         fields = (
-            'user', 'team', 'games_played', 'points_total', 'points_average', 'username', 'first_name', 'last_name',
-            'team_name')
+            'user', 'team', 'height', 'games_played', 'points_total', 'points_average', 'username', 'first_name',
+            'last_name', 'team_name')

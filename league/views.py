@@ -158,3 +158,5 @@ class RetrieveUpdateDestroyPlayerAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = PlayerSerializer
     queryset = Player.objects.all()
     permission_classes = [IsAuthenticatedOrReadOnly]
+
+
