@@ -318,10 +318,9 @@ Sample Response
 }
 ```
 
-#Notes
+# Notes
 
-Refer the db_dump folder with sample data.
-Import data to relevant tables
+Refer the db_dump folder with sample data. Import data to relevant tables
 
 TODO:
 
@@ -331,8 +330,8 @@ Team Selection
 
 Statistics of the site’s usage
 
+# References
 
-#References
 https://www.django-rest-framework.org/tutorial/quickstart/
 
 https://github.com/juanbenitezdev/django-rest-framework-crud
