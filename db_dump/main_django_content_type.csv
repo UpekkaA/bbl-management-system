@@ -1,0 +1,12 @@
+1,admin,logentry
+2,auth,permission
+3,auth,group
+4,auth,user
+5,contenttypes,contenttype
+6,sessions,session
+7,league,season
+8,league,stadium
+9,league,team
+10,league,player
+11,league,game
+12,league,coach

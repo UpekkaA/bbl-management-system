@@ -1,0 +1,12 @@
+django_migrations,19
+django_admin_log,0
+django_content_type,12
+auth_permission,48
+auth_group,3
+auth_user,14
+auth_user_groups,1
+league_team,16
+league_coach,1
+league_player,3
+league_stadium,1
+league_game,1

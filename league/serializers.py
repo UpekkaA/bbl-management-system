@@ -5,7 +5,7 @@ from django.contrib.auth.password_validation import validate_password
 
 from league.models import Team, Stadium, Game, Coach, Player
 
-
+# Serializers
 class RegisterSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
         required=True,
