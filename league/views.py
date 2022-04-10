@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib.auth.models import User, Group
 from django_filters import rest_framework as filters
 from rest_framework import generics, viewsets
@@ -10,6 +12,8 @@ from .pagination import CustomPagination
 from .permissions import IsOwnerOrReadOnly
 from .serializers import RegisterSerializer, UserSerializer, GroupSerializer, TeamSerializer, StadiumSerializer, \
     GameSerializer, CoachSerializer, PlayerSerializer
+
+logger = logging.getLogger(__name__)
 
 
 class RegisterView(generics.CreateAPIView):
@@ -158,5 +162,3 @@ class RetrieveUpdateDestroyPlayerAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = PlayerSerializer
     queryset = Player.objects.all()
     permission_classes = [IsAuthenticatedOrReadOnly]
-
-
