@@ -60,16 +60,22 @@ class PlayerFilter(filters.FilterSet):
         )
 
     # calculate percentile and filter by the value
+    # the percentile value can be varied
     @staticmethod
     def filter_by_percentile(queryset, name, value):
         percentile = 0
         try:
-            playerslist = pd.DataFrame(queryset)
-            players_avg_points_array = playerslist[["points_average"]].to_numpy()
-            percentile = Util.get_percentile(players_avg_points_array, value)
+            player_list = list(Player.objects.values())
+            player_df = pd.DataFrame(player_list)
+            players_avg_points_array = list(player_df['points_average'])
+
+            # calculate the percentile value for the given list of player points averages
+            percentile = Util.get_percentile(players_avg_points_array, int(value))
+            logger.info("Info: Percentile calculated {0}".format(percentile))
         except Exception as err:
             logger.error("Error: {0}".format(err))
 
+        # filter the query set for points average greater than the calculated percentile value.
         return queryset.filter(
             Q(points_average__gte=percentile)
         )
