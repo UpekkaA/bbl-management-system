@@ -10,29 +10,10 @@ from .filters import TeamFilter, GameFilter, PlayerFilter
 from .models import Team, Stadium, Game, Coach, Player
 from .pagination import CustomPagination
 from .permissions import IsOwnerOrReadOnly
-from .serializers import RegisterSerializer, UserSerializer, GroupSerializer, TeamSerializer, StadiumSerializer, \
+from .serializers import GroupSerializer, TeamSerializer, StadiumSerializer, \
     GameSerializer, CoachSerializer, PlayerSerializer
 
 logger = logging.getLogger(__name__)
-
-
-class RegisterView(generics.CreateAPIView):
-    """
-    API endpoint that allows users to be registered.
-    """
-    queryset = User.objects.all()
-    permission_classes = (AllowAny,)
-    serializer_class = RegisterSerializer
-
-
-class UserViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-    queryset = User.objects.all().order_by('-date_joined')
-    serializer_class = UserSerializer
-    # permission_classes = [permissions.IsAuthenticated]
-    permission_classes = (AllowAny,)
 
 
 class GroupViewSet(viewsets.ModelViewSet):
@@ -41,8 +22,7 @@ class GroupViewSet(viewsets.ModelViewSet):
     """
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
-    permission_classes = (AllowAny,)
-    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 
 class ListCreateStadiumAPIView(ListCreateAPIView):
@@ -51,7 +31,7 @@ class ListCreateStadiumAPIView(ListCreateAPIView):
     """
     serializer_class = StadiumSerializer
     queryset = Stadium.objects.all()
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer):
         # Assign the user who created the team
@@ -73,7 +53,7 @@ class ListCreateTeamAPIView(ListCreateAPIView):
     """
     serializer_class = TeamSerializer
     queryset = Team.objects.all()
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     # permission_classes = (AllowAny,)
     pagination_class = CustomPagination
     filter_backends = (filters.DjangoFilterBackend,)
