@@ -237,7 +237,7 @@ PUT http://127.0.0.1:8000/api/v1/league/players/1/
 Get Players
 
 ```
-GET http://127.0.0.1:8000/api/v1/league/players?team=1&games_played_gt=5&points_total_gt=100&user_name=john&page_size=5&page=1
+GET http://127.0.0.1:8000/api/v1/league/players?team=1&games_played_gt=5&points_total_gt=100&user_name=john&page_size=5&page=1&percentile=90
 Query parameters are optional
 Sample Response:
 {
@@ -260,6 +260,9 @@ Sample Response:
     ]
 }
 ```
+
+Query parameter "percentile" can be used to pass expected percentile (ie: 90, 50), If 90 is given as the percentile ,
+the list of players whose average score is in the 90 percentile across the team will be returned.
 
 # Stadium
 
@@ -312,12 +315,28 @@ Sample Response
             "winner": 1,
             "score_home": 12,
             "score_away": 10,
-            "creator": "admin"
+            "creator": "admin",
+            "players": []
         }
     ]
 }
 ```
 
+Get list of players who are playing in a given game
+```
+GET http://127.0.0.1:8000/api/v1/league/games/players?team=1&game=1
+```
+
+Update list of players who are playing in a given game (Team Selection)
+```
+POST http://127.0.0.1:8000/api/v1/league/games/players
+"Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjQ5NjE2NjYwLCJpYXQiOjE2NDk2MTYxMzYsImp0aSI6ImQxOGM2MjQ5ODgwODQ5NTJhNDQxOGNkNDc5NTU2NDNhIiwidXNlcl9pZCI6Nn0.tthmS9FQZPj27kRdyd85FpRlgrIe-1kxKGRIzkJaFLg"
+{
+  "team_id": 1,
+  "game_id": 1,
+  "player_ids": [1, 2, 3, 4, 5]
+}
+```
 # Notes
 
 Refer the db_dump folder with sample data. Import data to relevant tables
