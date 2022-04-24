@@ -8,9 +8,10 @@ urlpatterns = [
     path('teams', views.ListCreateTeamAPIView.as_view(), name='get_post_teams'),
     path('teams/<int:pk>/', views.RetrieveUpdateDestroyTeamAPIView.as_view(), name='get_delete_update_teams'),
 
-    # Teams
+    # Games
     path('games', views.ListCreateGameAPIView.as_view(), name='get_post_games'),
     path('games/<int:pk>/', views.RetrieveUpdateDestroyGameAPIView.as_view(), name='get_delete_update_games'),
+    path('games/players', views.GamePlayerAPIView.as_view(), name='get_post_game_payers'),
 
     # Stadiums
     path('stadiums', views.ListCreateStadiumAPIView.as_view(), name='get_post_stadiums'),

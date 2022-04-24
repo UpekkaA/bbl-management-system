@@ -326,8 +326,6 @@ TODO:
 
 Permission Handling
 
-Team Selection
-
 Statistics of the site’s usage
 
 # References

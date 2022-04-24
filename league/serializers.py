@@ -34,7 +34,7 @@ class GameSerializer(serializers.ModelSerializer):
     class Meta:
         model = Game
         fields = ('id', 'date_time', 'stadium', 'finished', 'round', 'team_home', 'team_away', 'winner', 'score_home',
-                  'score_away', 'creator')
+                  'score_away', 'creator', 'players')
 
 
 # create class to serializer model for Coach

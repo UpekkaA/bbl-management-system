@@ -2,9 +2,11 @@ import logging
 
 from django.contrib.auth.models import User, Group
 from django_filters import rest_framework as filters
-from rest_framework import generics, viewsets
+from rest_framework import generics, viewsets, status
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .filters import TeamFilter, GameFilter, PlayerFilter
 from .models import Team, Stadium, Game, Coach, Player
@@ -12,6 +14,8 @@ from .pagination import CustomPagination
 from .permissions import IsOwnerOrReadOnly
 from .serializers import GroupSerializer, TeamSerializer, StadiumSerializer, \
     GameSerializer, CoachSerializer, PlayerSerializer
+
+import pandas as pd
 
 logger = logging.getLogger(__name__)
 
@@ -61,6 +65,7 @@ class ListCreateTeamAPIView(ListCreateAPIView):
 
     def perform_create(self, serializer):
         # Assign the user who created the team
+        logger.info("Info: Perform create Team")
         serializer.save(creator=self.request.user)
 
 
@@ -86,6 +91,7 @@ class ListCreateGameAPIView(ListCreateAPIView):
 
     def perform_create(self, serializer):
         # Assign the user who created the team
+        logger.info("Info: Perform create Game")
         serializer.save(creator=self.request.user)
 
 
@@ -108,6 +114,7 @@ class ListCreateCoachAPIView(ListCreateAPIView):
     pagination_class = CustomPagination
 
     def perform_create(self, serializer):
+        logger.info("Info: Perform create Coach")
         serializer.save()
 
 
@@ -132,6 +139,7 @@ class ListCreatePlayerAPIView(ListCreateAPIView):
     filterset_class = PlayerFilter
 
     def perform_create(self, serializer):
+        logger.info("Info: Perform create Player")
         serializer.save()
 
 
@@ -142,3 +150,59 @@ class RetrieveUpdateDestroyPlayerAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = PlayerSerializer
     queryset = Player.objects.all()
     permission_classes = [IsAuthenticatedOrReadOnly]
+
+
+class GamePlayerAPIView(APIView):
+    """
+    API endpoint that allows Players to be selected for the games,
+    The coach will select the team members who will play for each game.
+    """
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get(self, request, *args, **kwargs):
+        logger.info("Info: View Player Selection for Game")
+        team_id = request.query_params.get('team')
+        game_id = request.query_params.get('game')
+
+        if game_id is not None:
+            game = Game.objects.get(id=game_id)
+            if game is not None:
+                players = list(game.players.values())
+                if team_id is not None:
+                    team = Team.objects.get(id=team_id)
+                    if team is not None:
+                        team_players = list()
+                        for p in players:
+                            if p['team_id'] == int(team_id):
+                                team_players.append(p)
+                        players = list(team_players)
+                player_df = pd.DataFrame(players)
+                if player_df.empty:
+                    return Response(list(), status=status.HTTP_200_OK)
+                players_ids = list(player_df['id'])
+                return Response(players_ids, status=status.HTTP_200_OK)
+        return Response(None, status=status.HTTP_400_BAD_REQUEST)
+
+    def post(self, request, *args, **kwargs):
+        logger.info("Info: Perform Player Selection for Game")
+        team_id = request.data.get('team_id')
+        game_id = request.data.get('game_id')
+        player_ids = request.data.get('player_ids')
+
+        if game_id is not None:
+            game = Game.objects.get(id=game_id)
+            if game is not None:
+                game_players = list()
+                if team_id is not None:
+                    team = Team.objects.get(id=team_id)
+                    if team is not None:
+                        for p in player_ids:
+                            player = Player.objects.get(id=p)
+                            if player is not None and player.team_id == int(team_id):
+                                game_players.append(player)
+
+                game.players.set(game_players)
+                game.save()
+                return Response(game, status=status.HTTP_201_CREATED)
+
+        return Response(None, status=status.HTTP_400_BAD_REQUEST)
